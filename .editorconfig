@@ -1,0 +1,17 @@
+root = true
+
+[*]
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[Makefile]
+indent_style = tab
+indent_size = 8
+
+[*.{c,cpp}]
+indent_style = tab
+indent_size = 8
+
+[*.{md,mkd,markdown}]
+trim_trailing_whitespace = false

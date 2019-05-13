@@ -1,23 +1,24 @@
-TARGET  = lib/libguisan.a
-  
-AR      = ar
+AR	= ar
 
-DIRS	=$(shell find ./src -maxdepth 3 -type d)
-SOURCE	= $(foreach dir,$(DIRS),$(wildcard $(dir)/*.cpp))
-OBJS    = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCE)))
-DEPS	= $(SOURCE:%.cpp=%.d)
+TARGET	= lib/libguisan.a
 
-CPPFLAGS +=-I./include $(SDL_CFLAGS) -MD -MT $@ -MF $(@:%.o=%.d)
-  
+SRC	:= $(wildcard **/*.cpp)
+OBJS	:= $(SRC:%.cpp=%.o)
+DEPS	:= $(SRC:%.cpp=%.d)
+
+
+CPPFLAGS +=-I./include $(shell sdl2-config --cflags) -MD -MT $@ -MF $(@:%.o=%.d)
+
 .PHONY : all clean
-  
+
 $(TARGET) : $(OBJS)
 	$(AR) cr $(TARGET) $(OBJS)
 
 all : $(TARGET)
 
+.PHONY : clean
 clean :
 	rm -f $(OBJS) $(DEPS)
 	rm -f $(TARGET)
-	
+
 -include $(DEPS)
