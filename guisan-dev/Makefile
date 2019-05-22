@@ -5,14 +5,16 @@ TARGET	= lib/libguisan.a
 SRC	:= $(wildcard **/*.cpp)
 OBJS	:= $(SRC:%.cpp=%.o)
 DEPS	:= $(SRC:%.cpp=%.d)
+SDLINC = $(shell pkg-config --cflags sdl2)
+SDLLIB = $(shell pkg-config --libs sdl2)
 
 
-CPPFLAGS +=-I./include $(shell sdl2-config --cflags) -MD -MT $@ -MF $(@:%.o=%.d)
+CPPFLAGS +=-I./include $(SDLINC) -MD -MT $@ -MF $(@:%.o=%.d)
 
 .PHONY : all clean
 
 $(TARGET) : $(OBJS)
-	$(AR) cr $(TARGET) $(OBJS)
+	$(AR) crs $(TARGET) $(OBJS)
 
 all : $(TARGET)
 

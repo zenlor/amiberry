@@ -29,6 +29,8 @@ SDL ?= 2
 #USE_PROFILE=1
 #SANITIZE=1
 
+#GCC_WARN=1
+
 # compiler
 CC		?= gcc
 CXX		?= g++

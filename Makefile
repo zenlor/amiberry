@@ -28,7 +28,7 @@ PNGINC := $(shell pkg-config --cflags libpng)
 PNGLIB := $(shell pkg-config --libs libpng)
 
 # includes and libs
-CPPFLAGS 	:= -Wall -Os -pipe -Wno-shift-overflow -Wno-narrowing -std=gnu++14
+CPPFLAGS 	:= -Os -pipe -std=gnu++14
 ASFLAGS		:= $(CPPFLAGS) -falign-functions=16
 LDFLAGS 	= -flto -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -ldl -lpthread
 
@@ -64,7 +64,7 @@ LDFLAGS += \
 	$(PNGLIB) \
 	-lpthread \
 
-export CFLAGS	+= -pipe -Wno-shift-overflow -Wno-narrowing
+export CFLAGS	+= -pipe
 export CXXFLAGS += $(CFLAGS) -std=gnu++14 -fpermissive
 
 #
@@ -100,6 +100,12 @@ LDFLAGS += -lasan
 CFLAGS += -fsanitize=leak -fsanitize-recover=address
 endif
 
+ifdef GCC_WARN
+WARNFLAGS	= -Wall -Wno-shift-overflow -Wno-narrowing
+CFLAGS		+= $(WARNFLAGS)
+CPPFLAGS	+= $(WARNFLAGS)
+endif
+
 # Dispmanx
 # WARNING: raspian magic
 ifeq ($(DISPMANX),1)
@@ -114,6 +120,7 @@ SDL2LIB := $(shell pkg-config --libs sdl2)
 
 CFLAGS		+= -DUSE_SDL2 $(SDL2INC)
 CPPFLAGS	+= -DUSE_SDL2 $(SDL2INC)
+LDFLAGS		+= $(SDL2LIB)
 else
 
 # SDL1
@@ -122,6 +129,7 @@ SDL1LIB := $(shell pkg-config --libs sdl)
 
 CFLAGS		+= -DUSE_SDL1 $(SDL1INC)
 CPPFLAGS	+= -DUSE_SDL1 $(SDL1INC)
+LDFLAGS		+= $(SDL1LIB)
 endif
 
 # RaspberryPi 3
@@ -245,7 +253,7 @@ ifeq ($(SDL),1)
 all: $(PROG)
 
 export CPPFLAGS += $(SDL_CFLAGS)
-LDFLAGS += $(SDL_LDFLAGS) -lSDL_image -lSDL_ttf -lguichan_sdl -lguichan
+LDFLAGS		+= $(SDL_LDFLAGS) -lSDL_image -lSDL_ttf -lguichan_sdl -lguichan
 endif
 
 #
@@ -255,7 +263,7 @@ ifeq ($(SDL),2)
 all: guisan $(PROG)
 
 CPPFLAGS	+= -Iguisan-dev/include
-LDFLAGS		+= -lSDL2_image -lSDL2_ttf -lguisan -Lguisan-dev/lib
+LDFLAGS		+= -lSDL2_image -lSDL2_ttf -Lguisan-dev/lib -lguisan
 endif
 
 
@@ -429,12 +437,12 @@ ifndef AARCH64
 ifdef HAVE_NEON
 OBJS += src/osdep/neon_helper.o
 src/osdep/neon_helper.o: src/osdep/neon_helper.s
-	$(CXX) $(CFLAGS) -Wall -o src/osdep/neon_helper.o -c src/osdep/neon_helper.s
+	$(CXX) $(CFLAGS) -o src/osdep/neon_helper.o -c src/osdep/neon_helper.s
 else
 
 OBJS += src/osdep/arm_helper.o
 src/osdep/arm_helper.o: src/osdep/arm_helper.s
-	$(CXX) $(CFLAGS) -Wall -o src/osdep/arm_helper.o -c src/osdep/arm_helper.s
+	$(CXX) $(CFLAGS) -o src/osdep/arm_helper.o -c src/osdep/arm_helper.s
 endif
 endif
 
@@ -456,8 +464,8 @@ OBJS	+= \
 
 DEPS = $(OBJS:%.o=%.d) $(C_OBJS:%.o=%.d)
 
-$(PROG): $(OBJS) $(C_OBJS)
-	$(CXX) -o $(PROG) $(OBJS) $(C_OBJS) $(LDFLAGS)
+$(PROG) : $(OBJS) $(C_OBJS)
+	$(CXX) $(OBJS) $(C_OBJS) $(LDFLAGS) -o $(PROG)
 ifndef DEBUG
 # want to keep a copy of the binary before stripping? Then enable the below line
 #	cp $(PROG) $(PROG)-debug
