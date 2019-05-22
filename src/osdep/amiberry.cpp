@@ -15,7 +15,8 @@
 #include <signal.h>
 
 #include <algorithm>
-#ifndef ANDROID
+// #ifndef ANDROID
+#ifdef __GLIBC__
 #include <execinfo.h>
 #endif
 #include "sysdeps.h"

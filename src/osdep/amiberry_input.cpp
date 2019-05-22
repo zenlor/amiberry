@@ -7,7 +7,7 @@
 #include "inputdevice.h"
 
 #include "zfile.h"  /// Horace added
-#include <fstream>  /// Horace added 
+#include <fstream>  /// Horace added
 #include <algorithm>
 
 static struct host_input_button default_controller_map;
@@ -47,7 +47,7 @@ static void fill_default_controller(void)
 	default_controller_map.dpad_up = -1;
 	default_controller_map.dpad_down = -1;
 
-	default_controller_map.select_button = -1; //                          
+	default_controller_map.select_button = -1; //
 	default_controller_map.start_button = 4; // play
 	default_controller_map.left_shoulder = 6; // rwd
 	default_controller_map.right_shoulder = 5; // fwd
@@ -99,7 +99,7 @@ static void fill_blank_controller(void)
 	default_controller_map.dpad_up = -1;
 	default_controller_map.dpad_down = -1;
 
-	default_controller_map.select_button = -1; //                 
+	default_controller_map.select_button = -1; //
 	default_controller_map.start_button = -1; // play
 	default_controller_map.left_shoulder = -1; // rwd
 	default_controller_map.right_shoulder = -1; // fwd
@@ -135,7 +135,7 @@ static void fill_blank_controller(void)
 #ifdef USE_SDL1
 static void fill_default_keyboard()
 {
-	// test using iPac layout 
+	// test using iPac layout
 	default_keyboard_map.north_button = SDLK_LSHIFT;
 	default_keyboard_map.east_button = SDLK_LCTRL;
 	default_keyboard_map.south_button = SDLK_LALT;
@@ -156,7 +156,7 @@ static void fill_default_keyboard()
 #elif USE_SDL2
 static void fill_default_keyboard()
 {
-	// test using iPac layout 
+	// test using iPac layout
 	default_keyboard_map.north_button = SDL_SCANCODE_LSHIFT;
 	default_keyboard_map.east_button = SDL_SCANCODE_LCTRL;
 	default_keyboard_map.south_button = SDL_SCANCODE_LALT;
@@ -556,8 +556,8 @@ int find_retroarch(const TCHAR* find_setting, char* retroarch_file, host_input_b
 				tempbutton = abs(atol(param.c_str()));
 			// gets the parameter
 
-			// this will need something separate to pull out the number of hats 
-			//  use SET_BIT on hX numbers 
+			// this will need something separate to pull out the number of hats
+			//  use SET_BIT on hX numbers
 
 			if (strncmp(find_setting, "count_hats", 11) == 0 && param.at(0) == 'h')
 			{
@@ -914,12 +914,12 @@ static int init_joystick(void)
 				host_input_buttons[cpt].rstick_axis_y_invert = find_retroarch_polarity(
 					"input_r_y_plus_axis", control_config);
 
-			//i'll just leave this here for when we have a working debug logging                                
+			//i'll just leave this here for when we have a working debug logging
 			//              printf("invert left  y axis: %d\n",host_input_buttons[cpt].lstick_axis_y_invert);
 			//              printf("invert left  x axis: %d\n",host_input_buttons[cpt].lstick_axis_x_invert);
 			//              printf("invert right y axis: %d\n",host_input_buttons[cpt].rstick_axis_y_invert);
 			//              printf("invert right x axis: %d\n",host_input_buttons[cpt].rstick_axis_x_invert);
-			//                                       
+			//
 			//input_state_slot_increase_axis
 			//input_state_slot_decrease_axis
 			} // end of .cfg file found
@@ -1105,19 +1105,19 @@ static void read_joystick(void)
 			// cd32 red, blue, green, yellow
 			setjoybuttonstate(0, 0, keystate[host_keyboard_buttons[hostkeyid].south_button]); // b
 			setjoybuttonstate(0, 1, keystate[host_keyboard_buttons[hostkeyid].east_button]); // a
-			setjoybuttonstate(0, 2, keystate[host_keyboard_buttons[hostkeyid].north_button]); //y 
+			setjoybuttonstate(0, 2, keystate[host_keyboard_buttons[hostkeyid].north_button]); //y
 			setjoybuttonstate(0, 3, keystate[host_keyboard_buttons[hostkeyid].west_button]); // x
 
-			setjoybuttonstate(0, 4, keystate[host_keyboard_buttons[hostkeyid].left_shoulder]); // z 
+			setjoybuttonstate(0, 4, keystate[host_keyboard_buttons[hostkeyid].left_shoulder]); // z
 			setjoybuttonstate(0, 5, keystate[host_keyboard_buttons[hostkeyid].right_shoulder]); // x
 			setjoybuttonstate(0, 6, keystate[host_keyboard_buttons[hostkeyid].start_button]); //num1
-			// up down left right     
+			// up down left right
 			setjoybuttonstate(0, 7, keystate[host_keyboard_buttons[hostkeyid].dpad_up]);
 			setjoybuttonstate(0, 8, keystate[host_keyboard_buttons[hostkeyid].dpad_down]);
 			setjoybuttonstate(0, 9, keystate[host_keyboard_buttons[hostkeyid].dpad_left]);
 			setjoybuttonstate(0, 10, keystate[host_keyboard_buttons[hostkeyid].dpad_right]);
 
-			// stick left/right     
+			// stick left/right
 			setjoybuttonstate(0, 11, keystate[host_keyboard_buttons[hostkeyid].lstick_button]);
 			setjoybuttonstate(0, 12, keystate[host_keyboard_buttons[hostkeyid].rstick_button]);
 			setjoybuttonstate(0, 13, keystate[host_keyboard_buttons[hostkeyid].select_button]); // num2
@@ -1208,7 +1208,7 @@ static void read_joystick(void)
 				// reset button
 			}
 
-			// this *should* allow us to handle function buttons (l2/r2/select)  <<<  except there were issues this work, picking a fixed number!!                            
+			// this *should* allow us to handle function buttons (l2/r2/select)  <<<  except there were issues this work, picking a fixed number!!
 			// these two cannot be used whilst we are limtied to 32 buttons, since 'REMAP_BUTTONS' = 14
 			// else if (SDL_JoystickGetButton(joysticktable[hostjoyid], host_input_buttons[hostjoyid].left_trigger) & 1)
 			//     held_offset = REMAP_BUTTONS * 2;
@@ -1226,7 +1226,7 @@ static void read_joystick(void)
 			int lower_bound = -32767;
 			int upper_bound = 32767;
 
-			// left stick   
+			// left stick
 			if (!currprefs.input_analog_remap)
 			{
 				// handle the X axis  (left stick)
@@ -1236,7 +1236,7 @@ static void read_joystick(void)
 
 				setjoystickstate(hostjoyid + 1, 0, val, upper_bound);
 
-				// handle the Y axis   
+				// handle the Y axis
 				val = SDL_JoystickGetAxis(joysticktable[hostjoyid], current_controller_map.lstick_axis_y);
 				if (current_controller_map.lstick_axis_y_invert != 0)
 					val = val * -1;
@@ -1246,7 +1246,7 @@ static void read_joystick(void)
 
 			else
 			{
-				// alternative code for custom remapping the left stick  
+				// alternative code for custom remapping the left stick
 				// handle the Y axis  (left stick)
 				setjoybuttonstate(hostjoyid + 1, 7 + held_offset,
 				                  SDL_JoystickGetAxis(joysticktable[hostjoyid], current_controller_map.lstick_axis_y) <=
@@ -1258,7 +1258,7 @@ static void read_joystick(void)
 				                  upper_bound
 					                  ? 1
 					                  : 0);
-				// handle the X axis  
+				// handle the X axis
 				setjoybuttonstate(hostjoyid + 1, 9 + held_offset,
 				                  SDL_JoystickGetAxis(joysticktable[hostjoyid], current_controller_map.lstick_axis_x) <=
 				                  lower_bound
@@ -1285,11 +1285,11 @@ static void read_joystick(void)
 			setjoystickstate(hostjoyid + 1, 3, val, upper_bound);
 
 			// cd32 red, blue, green, yellow
-			// south 
+			// south
 			setjoybuttonstate(hostjoyid + 1, 0 + held_offset,
 			                  (SDL_JoystickGetButton(joysticktable[hostjoyid], current_controller_map.south_button) & 1
 			                  ));
-			// east                    
+			// east
 			setjoybuttonstate(hostjoyid + 1, 1 + held_offset,
 			                  (SDL_JoystickGetButton(joysticktable[hostjoyid],
 			                                         current_controller_map.east_button) & 1));
@@ -1317,7 +1317,7 @@ static void read_joystick(void)
 			// start
 
 			// up down left right
-			// HAT Handling *or* D-PAD buttons     
+			// HAT Handling *or* D-PAD buttons
 			const int hat = SDL_JoystickGetHat(joysticktable[hostjoyid], 0);
 
 			setjoybuttonstate(hostjoyid + 1, 7 + held_offset, current_controller_map.dpad_up + 1
@@ -1410,14 +1410,14 @@ int input_get_default_joystick(struct uae_input_device* uid, const int num, int 
 	// set up a temporary control layout/ called 'thismap'
 	struct joypad_map_layout thismap[4];
 
-	// here, we will fill thismap with defaults, if a custom value is not set. 
+	// here, we will fill thismap with defaults, if a custom value is not set.
 	// this will do a lot of the 'logic' of the original code.
 
 	thismap[0] = currprefs.jports[port].amiberry_custom_none; // grab the 'no selection' options for the current map
 
 	// directions
 
-	if (port < 2) // ports 0, 1 ... 
+	if (port < 2) // ports 0, 1 ...
 	{
 		if (mode == JSEM_MODE_MOUSE)
 		{
@@ -1466,7 +1466,7 @@ int input_get_default_joystick(struct uae_input_device* uid, const int num, int 
 				                               : INPUTEVENT_JOY1_RIGHT;
 		}
 		// standard fire buttons
-		if (mode == JSEM_MODE_JOYSTICK_CD32) // CD32 joypad  
+		if (mode == JSEM_MODE_JOYSTICK_CD32) // CD32 joypad
 		{
 			thismap[0].south_action = thismap[0].south_action
 				                          ? thismap[0].south_action
@@ -1494,7 +1494,7 @@ int input_get_default_joystick(struct uae_input_device* uid, const int num, int 
 				                          ? INPUTEVENT_JOY2_CD32_PLAY
 				                          : INPUTEVENT_JOY1_CD32_PLAY;
 		}
-		else if (currprefs.jports[port].id >= JSEM_JOYS) // default, normal joystick  
+		else if (currprefs.jports[port].id >= JSEM_JOYS) // default, normal joystick
 		{
 			thismap[0].south_action = thismap[0].south_action
 				                          ? thismap[0].south_action
@@ -1563,7 +1563,7 @@ int input_get_default_joystick(struct uae_input_device* uid, const int num, int 
 				                                   : INPUTEVENT_KEY_RETURN;
 		}
 	}
-	else // ports 2, 3 ... parallel ports 
+	else // ports 2, 3 ... parallel ports
 	{
 		thismap[0].dpad_up_action = thismap[0].dpad_up_action
 			                            ? thismap[0].dpad_up_action
@@ -1609,7 +1609,7 @@ int input_get_default_joystick(struct uae_input_device* uid, const int num, int 
 	thismap[1] = currprefs.jports[port].amiberry_custom_hotkey; // grab the 'select button' options for the current map
 
 	// currently disabled
-	//	thismap[2] = currprefs.jports[port].amiberry_custom_left_trigger; // grab the 'left trigger'  options for the current map        
+	//	thismap[2] = currprefs.jports[port].amiberry_custom_left_trigger; // grab the 'left trigger'  options for the current map
 	//	thismap[3] = currprefs.jports[port].amiberry_custom_right_trigger; // grab the 'right trigger' options for the current map
 
 	//  Now assign the actual buttons VALUES (TRUE/FALSE) to trigger the EVENTS
@@ -1619,18 +1619,18 @@ int input_get_default_joystick(struct uae_input_device* uid, const int num, int 
 	{
 		function_offset = n * REMAP_BUTTONS;
 
-		// s/e/w/n      
+		// s/e/w/n
 		setid_af(uid, num, ID_BUTTON_OFFSET + 0 + function_offset, 0, port, thismap[n].south_action, af, gp);
 		setid(uid, num, ID_BUTTON_OFFSET + 1 + function_offset, 0, port, thismap[n].east_action, gp);
 		setid(uid, num, ID_BUTTON_OFFSET + 2 + function_offset, 0, port, thismap[n].west_action, gp);
 		setid(uid, num, ID_BUTTON_OFFSET + 3 + function_offset, 0, port, thismap[n].north_action, gp);
 
-		// left shoulder / right shoulder / start  
+		// left shoulder / right shoulder / start
 		setid(uid, num, ID_BUTTON_OFFSET + 4 + function_offset, 0, port, thismap[n].left_shoulder_action, gp);
 		setid(uid, num, ID_BUTTON_OFFSET + 5 + function_offset, 0, port, thismap[n].right_shoulder_action, gp);
 		setid(uid, num, ID_BUTTON_OFFSET + 6 + function_offset, 0, port, thismap[n].start_action, gp);
 
-		// directions  
+		// directions
 		setid(uid, num, ID_BUTTON_OFFSET + 7 + function_offset, 0, port, thismap[n].dpad_up_action, gp);
 		setid(uid, num, ID_BUTTON_OFFSET + 8 + function_offset, 0, port, thismap[n].dpad_down_action, gp);
 		setid(uid, num, ID_BUTTON_OFFSET + 9 + function_offset, 0, port, thismap[n].dpad_left_action, gp);

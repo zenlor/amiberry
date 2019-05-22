@@ -2,7 +2,7 @@
  * sigsegv_linux_arm.cpp - x86_64 Linux SIGSEGV handler
  *
  * Copyright (c) 2014 Jens Heitmann ARAnyM dev team (see AUTHORS)
- * 
+ *
  * Inspired by Bernie Meyer's UAE-JIT and Gwenole Beauchesne's Basilisk II-JIT
  *
  * This file is part of the ARAnyM project which builds a new and powerful
@@ -34,15 +34,15 @@
 #include "jit/compemu.h"
 #include "uae.h"
 
-#include <asm/sigcontext.h>
+#include <signal.h>
 #include <csignal>
 #include <dlfcn.h>
-#ifndef ANDROID
+#ifdef __GLIBC__
 #include <execinfo.h>
-#else
+#else // __GLIBC__
 int backtrace(void**,int){ return 0; }
 char** backtrace_symbols(void* const*,int){return NULL; }
-void backtrace_symbols_fd(void* const*,int,int){} 
+void backtrace_symbols_fd(void* const*,int,int){}
 #endif
 
 extern uae_u8* current_compile_p;
