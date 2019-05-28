@@ -5,35 +5,19 @@
 # @version 0.1
 include config.mk
 
-# libraries
-ZLIB2INC := $(shell pkg-config --cflags zlib)
-ZLIB2LIB := $(shell pkg-config --libs zlib)
 
-XML2INC := $(shell pkg-config --cflags libxml-2.0)
-XML2LIB := $(shell pkg-config --libs libxml-2.0)
-
-FLACINC := $(shell pkg-config --cflags flac)
-FLACLIB := $(shell pkg-config --libs flac)
-
-MPG123INC := $(shell pkg-config --cflags libmpg123)
-MPG123LIB := $(shell pkg-config --libs libmpg123)
-
-MPEG2INC := $(shell pkg-config --cflags libmpeg2)
-MPEG2LIB := $(shell pkg-config --libs libmpeg2)
-
-MPEG2CONVERTINC := $(shell pkg-config --cflags libmpeg2convert)
-MPEG2CONVERTLIB := $(shell pkg-config --libs libmpeg2convert)
-
-PNGINC := $(shell pkg-config --cflags libpng)
-PNGLIB := $(shell pkg-config --libs libpng)
-
-# includes and libs
-CPPFLAGS 	:= -Os -pipe -std=gnu++14
+# compiler flags
+CPPFLAGS 	:= -std=gnu++14 -Os -pipe
 ASFLAGS		:= $(CPPFLAGS) -falign-functions=16
-LDFLAGS 	= -flto -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -ldl -lpthread
+LDFLAGS 	= -flto -Wl,-O1 -Wl,--as-needed -ldl -lpthread
 
 # includes
-CPPFLAGS	+= -Isrc -Isrc/osdep -Isrc/threaddep -Isrc/include -Isrc/archivers
+CPPFLAGS	+=\
+	-Isrc \
+	-Isrc/osdep \
+	-Isrc/threaddep \
+	-Isrc/include \
+	-Isrc/archivers
 
 # common Defines
 CPPFLAGS += \
@@ -42,7 +26,7 @@ CPPFLAGS += \
 
 # common flags
 CPPFLAGS += \
-	-MD -MT $@ -MF $(@:%.o=%.d)
+	-MD -MT $@ $< $(@:%.o=%.d)
 
 # pkg-config libraries flags
 CPPFLAGS += \
@@ -134,43 +118,48 @@ endif
 
 # RaspberryPi 3
 ifeq ($(PLATFORM),rpi3)
-# 32bits
-ifeq (32,ARCH)
-CFLAGS	+= -mfpu=neon-fp-armv8
-endif
+CFLAGS		+=\
+	$(CFLAGS.cortex-a53)
+CPPFLAGS	+=\
+	$(CPPFLAGS.neon)
 
-CFLAGS		+= \
-	-march=armv8-a -mtune=cortex-a53
-CPPFLAGS	+= \
-	-DARMV6_ASSEMBLY \
-	-D_FILE_OFFSET_BITS=64 \
-	-DARMV6T2 \
-	-DUSE_ARMNEON \
-	-DARM_HAS_DIV
+USE_NEON=1
 endif
 
 # raspberry2
 ifeq ($(PLATFORM),rpi2)
-CFLAGS		+= -march=armv7-a -mtune=cortex-a7 -mfpu=neon-vfpv4
-CPPFLAGS	+= -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DUSE_SDL1
+CFLAGS		+= $(CFLAGS.cortex-a7)
+CPPFLAGS	+= $(CPPFLAGS.neon)
+CPPFLAGS	+=\
+	-DUSE_SDL1
 
 HAVE_NEON = 1
 
-# Neon
-CFLAGS += -DNEON
 endif
 
 # raspberry1
 ifeq ($(PLATFORM),rpi1)
-CFLAGS		+= -march=armv6zk -mtune=arm1176jzf-s -mfpu=vfp
-CFLAGS		+= -DNEON
-CPPFLAGS	+= -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2
+CFLAGS		+=\
+	-march=armv6zk \
+	-mtune=arm1176jzf-s \
+	-mfpu=vfp
+CFLAGS		+=\
+	-DNEON
+CPPFLAGS	+=\
+	-DARMV6_ASSEMBLY \
+	-D_FILE_OFFSET_BITS=64 \
+	-DARMV6T2
 endif
 
 # Android
 ifeq ($(PLATFORM),android)
-CFLAGS		+= -mfpu=neon -mfloat-abi=soft
-CPPFLAGS	+= -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DANDROIDSDL -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DUSE_SDL1
+CFLAGS		+=\
+	-mfpu=neon \
+	-mfloat-abi=soft
+CPPFLAGS	+=\
+	$(CPPFLAGS.neon) \
+	-DANDROIDSDL \
+	-DUSE_SDL1
 ANDROID		= 1
 HAVE_NEON	= 1
 HAVE_SDL_DISPLAY = 1
@@ -178,67 +167,73 @@ endif
 
 # OrangePI
 ifeq ($(PLATFORM),orangepi-pc)
-CFLAGS		+= \
-	-march=armv7-a -mtune=cortex-a7 -mfpu=neon-vfpv4
+CFLAGS		+=\
+	$(CFLAGS.cortex-a7)
 CPPFLAGS	+= \
-	-DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 \
-	-DUSE_ARMNEON -DARM_HAS_DIV -DMALI_GPU -DUSE_RENDER_THREAD
+	$(CPPFLAGS.neon) \
+	$(CPPFLAGS.mali)
+HAVE_NEON = 1
+endif
+
+ifeq ($(PLATFORM),odroid-xu4)
+CFLAGS		+=\
+	-mcpu=cortex-a15.cortex-a7 \
+	-mtune=cortex-a15.cortex-a7 \
+	-mfpu=neon-vfpv4
+CPPFLAGS	+=\
+	$(CPPFLAGS.neon) \
+	-DUSE_RENDER_THREAD \
+	-DFASTERCYCLES
 
 HAVE_NEON = 1
 endif
 
-ifeq ($(PLATFORM),xu4)
-CFLAGS		+= \
-	-mcpu=cortex-a15.cortex-a7 -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4
+ifeq ($(PLATFORM),odroid-c1)
+CFLAGS		+=\
+	$(CFLAGS.cortex-a5)
 CPPFLAGS	+= \
-	-DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON \
-	-DARM_HAS_DIV -DUSE_SDL2 -DMALI_GPU -DUSE_RENDER_THREAD -DFASTERCYCLES
-
-HAVE_NEON = 1
-endif
-
-ifeq ($(PLATFORM),c1)
-CFLAGS		+= \
-	-march=armv7-a -mcpu=cortex-a5 -mtune=cortex-a5 -mfpu=neon-vfpv4
-CPPFLAGS	+= \
-	-DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON \
-	-DARM_HAS_DIV -DUSE_SDL2 -DMALI_GPU -DUSE_RENDER_THREAD -DFASTERCYCLES
+	$(CPPFLAGS.neon) \
+	$(CPPFLAGS.mali)
 endif
 
 ifeq ($(PLATFORM),n1)
 AARCH64 = 1
-#CFLAGS		+=\
-#	-march=armv8-a -mtune=cortex-a53 -mfpu=neon-fp-armv8
+CFLAGS		+=\
+	$(CFLAGS.cortex-a53)
 CPPFLAGS	+= \
-	-D_FILE_OFFSET_BITS=64 -DUSE_SDL2 -DMALI_GPU -DUSE_RENDER_THREAD -DFASTERCYCLES
+	-D_FILE_OFFSET_BITS=64 \
+	$(CPPFLAGS.mali)
 endif
 
 ifeq ($(PLATFORM),vero4k)
 CFLAGS		+=\
-	-march=armv8-a -mtune=cortex-a53 -mfpu=neon-fp-armv8
+	$(CFLAGS.cortex-a53)
 CPPFLAGS	+=\
 	-I/opt/vero3/include \
-	-DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON \
-	-DARM_HAS_DIV -DMALI_GPU -DUSE_RENDER_THREAD -DFASTERCYCLES
-LDFLAGS		+= -L/opt/vero3/lib
+	$(CPPFLAGS.neon) \
+	$(CPPFLAGS.mali)
+LDFLAGS		+=\
+	-L/opt/vero3/lib
 HAVE_NEON = 1
 endif
 
 ifeq ($(PLATFORM),tinker)
 CFLAGS		+= \
-	-march=armv7-a -mtune=cortex-a17 -mfpu=neon-vfpv4
+	-march=armv7-a \
+	-mtune=cortex-a17 \
+	-mfpu=neon-vfpv4
 CPPFLAGS	+= \
-	-DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON \
-	-DARM_HAS_DIV -DUSE_SDL2 -DFASTERCYCLES -DUSE_RENDER_THREAD -DMALI_GPU
+	$(CPPFLAGS.neon) \
+	$(CPPFLAGS.mali)
 HAVE_NEON = 1
 endif
 
 ifeq ($(PLATFORM),rockpro64)
 CFLAGS		+= \
-	-march=armv8-a -mtune=cortex-a53 -mfpu=neon-fp-armv8
+	$(CFLAGS.cortex-a53)
 CPPFLAGS	+= \
-	-DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON \
-	-DARM_HAS_DIV -DUSE_SDL2 -DMALI_GPU -DUSE_RENDER_THREAD -DFASTERCYCLES
+	$(CPPFLAGS.neon) \
+	$(CPPFLAGS.mali)
 HAVE_NEON = 1
 endif
 
@@ -253,7 +248,7 @@ ifeq ($(SDL),1)
 all: $(PROG)
 
 export CPPFLAGS += $(SDL_CFLAGS)
-LDFLAGS		+= $(SDL_LDFLAGS) -lSDL_image -lSDL_ttf -lguichan_sdl -lguichan
+EXTRA_LDFLAGS	+= $(SDL_LDFLAGS) -lSDL_image -lSDL_ttf -lguichan_sdl -lguichan
 endif
 
 #
@@ -262,8 +257,8 @@ endif
 ifeq ($(SDL),2)
 all: guisan $(PROG)
 
-CPPFLAGS	+= -Iguisan-dev/include
-LDFLAGS		+= -lSDL2_image -lSDL2_ttf -Lguisan-dev/lib -lguisan
+CFLAGS += -Iguisan-dev/include
+LDFLAGS += -lSDL2_image -lSDL2_ttf -Lguisan-dev/lib -lguisan
 endif
 
 
@@ -462,13 +457,57 @@ OBJS	+= \
 	src/jit/compemu_fpp.o \
 	src/jit/compemu_support.o
 
-DEPS = $(OBJS:%.o=%.d) $(C_OBJS:%.o=%.d)
+GUISAN_OBJ = \
+	guisan-dev/src/widgets/icon.o \
+	guisan-dev/src/widgets/label.o \
+	guisan-dev/src/widgets/textbox.o \
+	guisan-dev/src/widgets/slider.o \
+	guisan-dev/src/widgets/imagebutton.o \
+	guisan-dev/src/widgets/container.o \
+	guisan-dev/src/widgets/listbox.o \
+	guisan-dev/src/widgets/scrollarea.o \
+	guisan-dev/src/widgets/radiobutton.o \
+	guisan-dev/src/widgets/dropdown.o \
+	guisan-dev/src/widgets/progressbar.o \
+	guisan-dev/src/widgets/tab.o \
+	guisan-dev/src/widgets/window.o \
+	guisan-dev/src/widgets/textfield.o \
+	guisan-dev/src/widgets/tabbedarea.o \
+	guisan-dev/src/widgets/checkbox.o \
+	guisan-dev/src/widgets/button.o \
+	guisan-dev/src/actionevent.o \
+	guisan-dev/src/imagefont.o \
+	guisan-dev/src/event.o \
+	guisan-dev/src/mouseevent.o \
+	guisan-dev/src/keyinput.o \
+	guisan-dev/src/key.o \
+	guisan-dev/src/rectangle.o \
+	guisan-dev/src/exception.o \
+	guisan-dev/src/image.o \
+	guisan-dev/src/guisan.o \
+	guisan-dev/src/keyevent.o \
+	guisan-dev/src/selectionevent.o \
+	guisan-dev/src/gui.o \
+	guisan-dev/src/inputevent.o \
+	guisan-dev/src/mouseinput.o \
+	guisan-dev/src/cliprectangle.o \
+	guisan-dev/src/font.o \
+	guisan-dev/src/genericinput.o \
+	guisan-dev/src/color.o \
+	guisan-dev/src/widget.o \
+	guisan-dev/src/graphics.o \
+	guisan-dev/src/focushandler.o \
+	guisan-dev/src/basiccontainer.o \
+	guisan-dev/src/defaultfont.o
 
+# main target
 $(PROG) : $(OBJS) $(C_OBJS)
-	$(CXX) $(OBJS) $(C_OBJS) $(LDFLAGS) -o $(PROG)
+	$(CXX) \
+		-o $(PROG) \
+		$(OBJS) $(C_OBJS) \
+		$(LDFLAGS)
 ifndef DEBUG
-# want to keep a copy of the binary before stripping? Then enable the below line
-#	cp $(PROG) $(PROG)-debug
+	cp $(PROG) $(PROG)-debug
 	$(STRIP) $(PROG)
 endif
 
@@ -483,6 +522,8 @@ bootrom:
 	od -v -t xC -w8 src/filesys |tail -n +5 | sed -e "s,^.......,," -e "s,[0123456789abcdefABCDEF][0123456789abcdefABCDEF],db(0x&);,g" > src/filesys_bootrom.cpp
 	touch src/filesys.cpp
 
+export $(CFLAGS)
+export $(CPPFLAGS)
 guisan:
 	$(MAKE) -C guisan-dev
 

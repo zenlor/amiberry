@@ -2,14 +2,15 @@ AR	= ar
 
 TARGET	= lib/libguisan.a
 
-SRC	:= $(wildcard **/*.cpp)
+SRC	:= $(wildcard src/*.cpp) $(wildcard src/*/*.cpp)
 OBJS	:= $(SRC:%.cpp=%.o)
 DEPS	:= $(SRC:%.cpp=%.d)
 SDLINC = $(shell pkg-config --cflags sdl2)
 SDLLIB = $(shell pkg-config --libs sdl2)
 
 
-CPPFLAGS +=-I./include $(SDLINC) -MD -MT $@ -MF $(@:%.o=%.d)
+#CPPFLAGS +=-std=gnu++14 -I./include $(SDLINC) -MD -MT $@ -MF $(@:%.o=%.d)
+CPPFLAGS +=-I./include
 
 .PHONY : all clean
 
